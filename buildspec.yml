@@ -3,23 +3,34 @@ version: 0.2
 phases:
   install:
     commands:
+      - echo Checking operating system...
+      - cat /etc/os-release
       - echo Installing JDK 17...
-      - yum install -y java-17-amazon-corretto  
-      - export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto  
+      - |
+        if [ -x "$(command -v yum)" ]; then
+          yum install -y java-17-amazon-corretto
+        elif [ -x "$(command -v apt-get)" ]; then
+          apt-get update -y
+          apt-get install -y openjdk-17-jdk
+        else
+          echo "Unsupported package manager. Exiting."
+          exit 1
+        fi
+      - export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
       - export PATH=$JAVA_HOME/bin:$PATH
-      - java -version 
+      - java -version  # Verify Java version
       - echo Installing Maven 3.9.6...
       - wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
       - tar -xvzf apache-maven-3.9.6-bin.tar.gz
       - mv apache-maven-3.9.6 /opt/maven
       - export PATH=/opt/maven/bin:$PATH
-      - mvn --version  
+      - mvn --version  # Verify Maven installation
 
   build:
     commands:
       - echo Building the Maven project...
-      - mvn clean package
+      - mvn clean package  # Build your project
 
 artifacts:
   files:
-    - target/*.jar  
+    - target/*.jar  # Specify output JAR file
