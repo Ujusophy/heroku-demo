@@ -3,16 +3,22 @@ version: 0.2
 phases:
   install:
     commands:
+      - echo Installing JDK 17...
+      - yum install -y java-17-amazon-corretto  
+      - export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto  
+      - export PATH=$JAVA_HOME/bin:$PATH
+      - java -version 
       - echo Installing Maven 3.9.6...
       - wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
       - tar -xvzf apache-maven-3.9.6-bin.tar.gz
       - mv apache-maven-3.9.6 /opt/maven
-      - export PATH=/opt/maven/bin:$PATH  
-      - mvn --version 
+      - export PATH=/opt/maven/bin:$PATH
+      - mvn --version  
+
   build:
     commands:
       - echo Building the Maven project...
-      - mvn clean package 
+      - mvn clean package
 
 artifacts:
   files:
