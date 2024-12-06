@@ -29,7 +29,7 @@ phases:
   build:
     commands:
       - echo Building the Maven project...
-      - mvn clean package  # Build your project
+      - mvn clean package -e -X  # Build your project
 
 artifacts:
   files:
