@@ -1,5 +1,9 @@
 version: 0.2
 
+env:
+  variables:
+    JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+
 phases:
   install:
     commands:
@@ -8,21 +12,24 @@ phases:
       - echo Installing JDK 17...
       - apt-get update -y
       - apt-get install -y openjdk-17-jdk
-      - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+      - export JAVA_HOME=$JAVA_HOME
       - export PATH=$JAVA_HOME/bin:$PATH
       - java -version  # Verify Java version
       - echo Installing Maven 3.9.6...
       - wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
       - tar -xvzf apache-maven-3.9.6-bin.tar.gz
       - mv apache-maven-3.9.6 /opt/maven
+      - chmod -R 755 /opt/maven
       - export PATH=/opt/maven/bin:$PATH
       - mvn --version  # Verify Maven installation
+      - rm apache-maven-3.9.6-bin.tar.gz  # Clean up
 
   build:
     commands:
       - echo Building the Maven project...
-      - mvn clean package -e -X  # Build your project
+      - mvn clean package -e -X > build.log 2>&1  # Log Maven output
 
 artifacts:
   files:
-    - target/*.jar  # Specify output JAR file
+    - target/*.jar
+    - build.log  # Include build log for debugging
